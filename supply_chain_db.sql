@@ -148,4 +148,8 @@ FROM shipments;
 SELECT *
 FROM products;
 
--- 
+/*
+objectives:
+efficient order fulfilment, minimize stockouts, reduce carrying costs.
+
+*/
