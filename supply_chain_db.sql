@@ -220,4 +220,37 @@ FROM shipments
 INNER JOIN orders on shipments.order_id = orders.order_id
 WHERE orders.order_status = 'In Progress';
 
--- 
+-- suppliers with >2 POCs
+SELECT suppliers.supplier_name, COUNT(suppliers.contact_person) as poc_count
+FROM suppliers
+GROUP BY suppliers.supplier_name
+HAVING COUNT(suppliers.contact_person) > 2
+ORDER BY poc_count DESC;
+
+-- avg. quantity of orders
+SELECT AVG(orders.quantity_ordered)
+FROM orders;
+
+-- products and their total no. of orders
+SELECT products.product_name, SUM(orders.quantity_ordered) as total_orders
+FROM products
+INNER JOIN orders on products.product_id = orders.product_id
+GROUP BY products.product_name
+ORDER BY total_orders DESC;
+
+-- orders in progress
+SELECT order_id
+FROM orders
+WHERE order_status = 'In Progress';
+
+-- oldest and latest orders
+SELECT MIN(orders.order_date), MAX(orders.order_date)
+FROM orders;
+
+-- total revenue generated
+SELECT products.product_id, (quantity_in_stock + orders.quantity_ordered)*unit_price as revenue
+FROM products
+INNER JOIN orders on products.product_id = orders.product_id
+ORDER BY revenue DESC;
+
+-
