@@ -148,8 +148,76 @@ FROM shipments;
 SELECT *
 FROM products;
 
-/*
-objectives:
-efficient order fulfilment, minimize stockouts, reduce carrying costs.
+-- all records from suppliers
+SELECT *
+FROM suppliers;
 
-*/
+-- product_name & unit_price
+SELECT products.product_name, products.unit_price
+FROM products;
+
+-- order_id & order_date
+SELECT orders.order_id, orders.order_date
+FROM orders;
+
+-- shipment_id & shipment_date
+SELECT shipments.shipment_id, shipments.shipment_date
+FROM shipments;
+
+-- total no. of products in stock (types of products)
+SELECT COUNT(product_id) as total_products
+FROM products;
+
+-- total quantity of products
+SELECT SUM(products.quantity_in_stock)
+FROM products;
+
+-- avg. unit_price
+SELECT AVG(products.unit_price)
+FROM products;
+
+-- max quantity ordered
+SELECT MAX(orders.quantity_ordered)
+FROM orders;
+
+-- suppliers with their POCs
+SELECT suppliers.supplier_name, suppliers.contact_person
+FROM suppliers;
+
+-- products with their description
+SELECT products.product_name, products.description
+FROM products;
+
+-- shipment details & tracking number (covers all shipment details)
+SELECT *
+FROM shipments;
+
+-- orders with associated suppliers
+SELECT orders.order_id, orders.order_date, suppliers.supplier_name
+FROM orders
+INNER JOIN suppliers on orders.supplier_id = suppliers.supplier_id
+GROUP BY suppliers.supplier_name;
+
+-- products with unit_price > 15
+SELECT products.product_name, products.unit_price
+FROM products
+WHERE unit_price > 15
+ORDER BY unit_price DESC;
+
+-- #orders per supplier (there is only 1 order per supplier)
+SELECT orders.supplier_id, orders.order_id
+FROM orders
+GROUP BY orders.supplier_id;
+
+-- quantity ordered for each product
+SELECT orders.product_id, SUM(orders.quantity_ordered) as product_quantity
+FROM orders
+GROUP BY orders.product_id;
+
+-- shipments with their order info
+SELECT shipments.*, orders.order_id, orders.order_date, orders.quantity_ordered, orders.order_status
+FROM shipments
+INNER JOIN orders on shipments.order_id = orders.order_id
+WHERE orders.order_status = 'In Progress';
+
+-- 
