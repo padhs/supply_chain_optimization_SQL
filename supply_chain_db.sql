@@ -349,3 +349,43 @@ ORDER BY revenue DESC
 LIMIT 5;
 
 -- #orders made each month
+SELECT DATE_FORMAT(orders.order_date, '%Y-%m') as month, COUNT(*) as total_orders
+FROM orders
+GROUP BY month;
+
+-- suppliers with declining order trend over past 3 months
+SELECT suppliers.supplier_name
+FROM suppliers
+LEFT JOIN orders on suppliers.supplier_id = orders.supplier_id
+WHERE orders.order_date >= DATE_SUB(CURRENT_DATE, INTERVAL 3 MONTH)
+GROUP BY suppliers.supplier_name
+HAVING COUNT(DISTINCT DATE_FORMAT(order_date, '%Y-%m')) < 3;
+
+-- avg. shipment duration for each supplier
+SELECT s.supplier_id, s.supplier_name, AVG(DATEDIFF(delivery_date, shipment_date)) AS avg_shipment_duration
+FROM suppliers s
+JOIN orders o ON s.supplier_id = o.supplier_id
+JOIN shipments sh ON o.order_id = sh.order_id
+GROUP BY s.supplier_id, s.supplier_name;
+
+-- seasonal demand patterns
+SELECT DATE_FORMAT(order_date, '%Y-%m') AS month, SUM(quantity_ordered) AS total_quantity_ordered
+FROM orders
+GROUP BY DATE_FORMAT(order_date, '%Y-%m')
+ORDER BY month;
+
+-- product popularity trends
+SELECT p.product_id, p.product_name, COUNT(*) AS total_orders
+FROM products p
+JOIN orders o ON p.product_id = o.product_id
+GROUP BY p.product_id, p.product_name
+ORDER BY total_orders DESC;
+
+ -- correlation between order frequency, product categories & customer demographics (need to add product categories)
+
+ -- future demand
+SELECT DATE_FORMAT(order_date, '%Y-%m') AS month, SUM(quantity_ordered) AS total_quantity_ordered
+FROM orders
+WHERE order_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 6 MONTH)
+GROUP BY DATE_FORMAT(order_date, '%Y-%m')
+ORDER BY month;
